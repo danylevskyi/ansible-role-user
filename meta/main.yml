@@ -1,0 +1,15 @@
+---
+
+galaxy_info:
+  author: danylevskyi
+  description: Configure users, ssh private keys and authorized keys.
+  company: "#root.ua"
+  license: "license (BSD, MIT)"
+  min_ansible_version: 1.2
+  platforms:
+    - name: Ubuntu
+      versions:
+        - all
+  galaxy_tags:
+    - development
+    - web

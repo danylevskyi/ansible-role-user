@@ -1,0 +1,41 @@
+---
+
+- name: Make sure that groups exist.
+  group:
+    name: "{{ item.name }}"
+    state: present
+  with_items: "{{ user_users }}"
+
+- name: Make sure that users exist.
+  user:
+    name: "{{ item.name }}"
+    group: "{{ item.name }}"
+    shell: /bin/bash
+  with_items: "{{ user_users }}"
+
+- name: Create ".ssh" directories exist.
+  file:
+    path: "/home/{{ item.name }}/.ssh"
+    owner: "{{ item.name }}"
+    group: "{{ item.name }}"
+    state: directory
+    mode: 0700
+  with_items: "{{ user_users }}"
+
+- name: Ensure private keys are present.
+  copy:
+    src: "{{ item.ssh_private_key_path }}"
+    dest: "/home/{{ item.name }}/.ssh/id_rsa"
+    mode: 0600
+    group: "{{ item.name }}"
+    owner: "{{ item.name }}"
+  with_items: "{{ user_users }}"
+  when: item.ssh_private_key_path is defined and item.ssh_private_key_path != false
+
+- name: Make sure authorized keys copied.
+  authorized_key:
+    user: "{{ item.name }}"
+    key: "{{ lookup('file', '{{ item.authorized_key_path }}') }}"
+    state: present
+  with_items: "{{ user_users }}"
+  when: item.authorized_key_path is defined and item.authorized_key_path != false
